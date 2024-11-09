@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Employee Management System</title>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    
+<body>
+    <div class="container">
+        <h1>Employee Management</h1>
+        <form id="employeeForm">
+            <input type="text" id="name" placeholder="Name" required>
+            <input type="text" id="position" placeholder="Position" required>
+            <input type="text" id="department" placeholder="Department" required>
+            <input type="number" id="salary" placeholder="Salary" required>
+            <button type="submit">Add Employee</button>
+        </form>
+        <table>
+            <thead>
+                
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Position</th>
+                    <th>Department</th>
+                    <th>Salary</th>
+                    <th>Hire Date</th>
+                </tr>
+            </thead>
+            <tbody id="employeeTable"></tbody>
+        </table>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('http://localhost:3001/employees')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('employeeTable');
+                    data.forEach(employee => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${employee.id}</td>
+                            <td>${employee.name}</td>
+                            <td>${employee.position}</td>
+                            <td>${employee.department}</td>
+                            <td>${employee.salary}</td>
+                            <td>${employee.hire_date}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                });
+
+            document.getElementById('employeeForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                const name = document.getElementById('name').value;
+                const position = document.getElementById('position').value;
+                const department = document.getElementById('department').value;
+                const salary = document.getElementById('salary').value;
+
+                fetch('http://localhost:3001/employees', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, position, department, salary })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    location.reload();
+                });
+            });
+        });
+    </script>
+</body>
+</html>
